@@ -317,3 +317,92 @@ var tl = gsap
         { scale: 1, ease: Expo.easeOut },
         "flower3"
     );
+
+// ScrollTrigger Animations
+gsap.registerPlugin(ScrollTrigger);
+
+// Pin the main container until the flower animation completes (optional, but good for UX)
+// For now, we let the user scroll naturally to the wishes
+
+const sections = document.querySelectorAll(".scroll-section");
+
+sections.forEach((section, index) => {
+    gsap.fromTo(
+        section,
+        { autoAlpha: 0, y: 50 },
+        {
+            duration: 1,
+            autoAlpha: 1,
+            y: 0,
+            ease: "power2.out",
+            scrollTrigger: {
+                trigger: section,
+                start: "top 80%", // Animation starts when top of section hits 80% of viewport height
+                end: "top 50%",
+                toggleActions: "play none none reverse", // Play on enter, reverse on leave back
+            },
+        }
+    );
+
+    // Animate content inside
+    gsap.fromTo(
+        section.querySelector(".content"),
+        { y: 30, opacity: 0 },
+        {
+            duration: 1,
+            y: 0,
+            opacity: 1,
+            delay: 0.2,
+            scrollTrigger: {
+                trigger: section,
+                start: "top 80%",
+            },
+        }
+    );
+});
+
+// Gallery Animations
+gsap.to(".gallery-title", {
+    scrollTrigger: {
+        trigger: "#gallery",
+        start: "top 70%",
+    },
+    opacity: 1,
+    y: 0,
+    duration: 1,
+    ease: "power3.out"
+});
+
+gsap.utils.toArray(".gallery-item").forEach((item, i) => {
+    gsap.to(item, {
+        scrollTrigger: {
+            trigger: item,
+            start: "top 85%",
+        },
+        opacity: 1,
+        y: 0,
+        duration: 1,
+        delay: i * 0.1, // Stagger effect
+        ease: "power3.out"
+    });
+});
+
+// Gallery Video Background Playlist
+const galleryVideoElement = document.getElementById('gallery-video');
+const galleryVideoSources = [
+    './videos/bg1.mp4',
+    './videos/bg2.mp4'
+];
+let currentGalleryVideoIndex = 0;
+
+function playNextGalleryVideo() {
+    galleryVideoElement.src = galleryVideoSources[currentGalleryVideoIndex];
+    galleryVideoElement.play();
+    currentGalleryVideoIndex = (currentGalleryVideoIndex + 1) % galleryVideoSources.length;
+}
+
+// Initial play for gallery video
+if (galleryVideoElement) {
+    playNextGalleryVideo();
+    galleryVideoElement.addEventListener('ended', playNextGalleryVideo);
+}
